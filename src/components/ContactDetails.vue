@@ -79,6 +79,12 @@
 							trigger: 'manual',
 						}" class="header-icon header-icon--pulse icon-history-force-white"
 						@click="refreshContact" />
+					<div v-if="fixed" v-tooltip="{
+							content: t('contacts', 'This contact was broken and received a fix. Please review the content and click here to save it.'),
+							show: true,
+							trigger: 'manual',
+						}" class="header-icon header-icon--pulse icon-up-force-white"
+						@click="updateContact" />
 					<div class="menu-icon">
 						<div v-click-outside="closeMenu" class="header-icon icon-more-white" @click="toggleMenu" />
 						<div :class="{ 'open': openedMenu }" class="popovermenu">
