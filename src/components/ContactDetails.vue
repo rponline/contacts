@@ -100,30 +100,54 @@
 
 			<!-- contact details -->
 			<section v-else class="contact-details">
-				<!-- properties iteration -->
-				<!-- using contact.key in the key and index as key to avoid conflicts between similar data and exact key -->
-				<!-- passing the debounceUpdateContact so that the contact-property component contains the function
-					and allow us to use it on the rfcProps since the scope is forwarded to the actions -->
-				<contact-property v-for="(property, index) in sortedProperties" :key="`${index}-${contact.key}-${property.name}`" :index="index"
-					:sorted-properties="sortedProperties" :property="property" :contact="contact"
-					:update-contact="debounceUpdateContact" @updatedcontact="debounceUpdateContact" />
+				<!-- group by property name -->
+				<contact-details-property-group v-for="(group, index) in sortedPropertiesByName"
+					:key="`sorted-property-group-${index}`"
+					:index="index"
+					:sorted-property-group="group"
+					:contact="contact"
+					:debounce-update-contact="debounceUpdateContact" />
 
 				<!-- addressbook change select - no last property because class is not applied here,
 					empty property because this is a required prop on regular property-select. But since
 					we are hijacking this... (this is supposed to be used with a ICAL.property, but to avoid code
 					duplication, we created a fake propModel and property with our own options here) -->
-				<property-select :prop-model="addressbookModel" :value.sync="addressbook" :is-first-property="true"
-					:is-last-property="true" :property="{}" class="property--addressbooks property--last" />
+				<div class="property__group">
+					<!-- title of property group-->
+					<property-title
+						:icon="addressbookModel.icon"
+						:readable-name="addressbookModel.readableName"
+						:info="addressbookModel.info" />
+					<property-select
+						:prop-model="addressbookModel"
+						:value.sync="addressbook"
+						:property="{}"
+						class="property--addressbooks" />
+				</div>
+				<div class="property__group">
+					<property-title
+						:icon="groupsModel.icon"
+						:readable-name="groupsModel.readableName"
+						:info="groupsModel.info" />
 
-				<!-- Groups always visible -->
-				<property-groups :prop-model="groupsModel" :value.sync="groups" :contact="contact"
-					:is-read-only="isReadOnly" class="property--groups property--last" />
-
-				<!-- Last modified-->
-				<property-rev v-if="contact.rev" :value="contact.rev" />
+					<!-- Groups always visible -->
+					<property-groups
+						:prop-model="groupsModel"
+						:value.sync="groups"
+						:contact="contact"
+						:is-read-only="isReadOnly"
+						class="property--groups" />
+				</div>
 
 				<!-- new property select -->
-				<add-new-prop v-if="!isReadOnly" :contact="contact" />
+				<div class="property__group">
+					<property-title
+						:icon="'icon-add'"
+						:readable-name="t('contacts', 'Add new property')" />
+					<add-new-prop v-if="!isReadOnly" :contact="contact" />
+				</div>
+				<!-- Last modified-->
+				<property-rev v-if="contact.rev" :value="contact.rev" />
 			</section>
 		</template>
 	</div>
@@ -138,8 +162,9 @@ import { stringify } from 'ical.js'
 import rfcProps from 'Models/rfcProps'
 import validate from 'Services/validate'
 
-import ContactProperty from './ContactDetails/ContactDetailsProperty'
+import ContactDetailsPropertyGroup from './ContactDetails/ContactDetailsPropertyGroup'
 import AddNewProp from './ContactDetails/ContactDetailsAddNewProp'
+import PropertyTitle from 'Components/Properties/PropertyTitle'
 import PropertySelect from './Properties/PropertySelect'
 import PropertyGroups from './Properties/PropertyGroups'
 import PropertyRev from './Properties/PropertyRev'
@@ -151,7 +176,8 @@ export default {
 	name: 'ContactDetails',
 
 	components: {
-		ContactProperty,
+		ContactDetailsPropertyGroup,
+		PropertyTitle,
 		PropertySelect,
 		PropertyGroups,
 		PropertyRev,
@@ -285,6 +311,44 @@ export default {
 					const nameB = b.name.split('.').pop()
 					return rfcProps.fieldOrder.indexOf(nameA) - rfcProps.fieldOrder.indexOf(nameB)
 				})
+		},
+
+		sortedPropertiesByName() {
+			// at this point we have an ordered list of property names
+			// ex: [ "version", "prodid", "uid", "rev", "fn", "cloud", "nickname", "n", "x-socialprofile"]
+
+			// Let's get this structure (props are arrays):
+			// [
+			// 	{
+			// 		"nickname": [
+			// 			nickname-prop1,
+			// 			nickname-prop2,
+			// 		]
+			// 	}, ...
+			// ]
+
+			let o = []
+			this.sortedPropertiesNamesOnce.forEach(property => {
+				let propgroup = {}
+				propgroup[property] = this.selectSortedPropertiesByName(property)
+				o.push(propgroup)
+			})
+			return o
+		},
+
+		sortedPropertiesNames() {
+			let sortedPropertiesNames = []
+			this.sortedProperties.forEach(property => {
+				sortedPropertiesNames.push(property.name)
+			})
+			return sortedPropertiesNames
+		},
+
+		sortedPropertiesNamesOnce() { // array of different propery names
+			// every propertyType only once
+			return this.sortedPropertiesNames.filter((item, pos) => {
+				return this.sortedPropertiesNames.indexOf(item) === pos
+			})
 		},
 
 		/**
@@ -528,7 +592,11 @@ export default {
 				}
 			}
 		},
-
+		selectSortedPropertiesByName(propertyName) {
+			return this.sortedProperties.filter((property) => {
+				return property.name === propertyName
+			})
+		},
 		/**
 		 * Refresh the data of a contact
 		 */

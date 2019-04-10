@@ -21,11 +21,7 @@
   -->
 
 <template>
-	<div v-if="propModel" :class="`grid-span-${gridLength}`" class="property">
-		<!-- title if first element -->
-		<property-title v-if="isFirstProperty && propModel.icon" :icon="propModel.icon" :readable-name="propModel.readableName"
-			:info="propModel.info" />
-
+	<div v-if="propModel" class="property">
 		<div class="property__row">
 			<!-- type selector -->
 			<multiselect v-if="propModel.options" v-model="localType"
@@ -39,8 +35,7 @@
 			</div>
 
 			<!-- no options, empty space -->
-			<div v-else class="property__label">
-			</div>
+			<div v-else class="property__label" />
 
 			<!-- props actions -->
 			<action :actions="actions" class="property__actions" />
@@ -61,14 +56,12 @@ import { DatetimePicker } from 'nextcloud-vue'
 import { VCardTime } from 'ical.js'
 
 import PropertyMixin from 'Mixins/PropertyMixin'
-import PropertyTitle from './PropertyTitle'
 
 export default {
 	name: 'PropertyDateTime',
 
 	components: {
-		DatetimePicker,
-		PropertyTitle
+		DatetimePicker
 	},
 
 	mixins: [PropertyMixin],
@@ -109,12 +102,6 @@ export default {
 	},
 
 	computed: {
-		gridLength() {
-			let hasTitle = this.isFirstProperty && this.propModel.icon ? 1 : 0
-			let isLast = this.isLastProperty ? 1 : 0
-			// length is always one & add one space at the end
-			return hasTitle + 1 + isLast
-		},
 
 		// make sure the property is valid
 		vcardTimeLocalValue() {

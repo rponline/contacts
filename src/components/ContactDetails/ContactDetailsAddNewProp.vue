@@ -21,10 +21,7 @@
   -->
 
 <template>
-	<div class="grid-span-3 property property--last">
-		<!-- title -->
-		<property-title :icon="'icon-add'" :readable-name="t('contacts', 'Add new property')" />
-
+	<div class="property">
 		<div class="property__row">
 			<div class="property__label" />
 
@@ -38,14 +35,9 @@
 <script>
 import rfcProps from 'Models/rfcProps'
 import Contact from 'Models/contact'
-import PropertyTitle from 'Components/Properties/PropertyTitle'
 
 export default {
 	name: 'ContactDetailsAddNewProp',
-
-	components: {
-		PropertyTitle
-	},
 
 	props: {
 		contact: {

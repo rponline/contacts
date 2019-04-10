@@ -23,8 +23,8 @@
 <template>
 	<!-- If not in the rfcProps then we don't want to display it -->
 	<component :is="componentInstance" v-if="propModel && propType !== 'unknown'" :select-type.sync="selectType"
-		:prop-model="propModel" :value.sync="value" :is-first-property="isFirstProperty"
-		:property="property" :is-last-property="isLastProperty" :class="{'property--last': isLastProperty}"
+		:prop-model="propModel" :value.sync="value"
+		:property="property"
 		:contact="contact" :prop-name="propName" :prop-type="propType"
 		:options="sortedModelOptions" :is-read-only="isReadOnly"
 		@delete="deleteProp" @update="updateProp" />
@@ -98,21 +98,6 @@ export default {
 			return rfcProps.fieldOrder
 		},
 
-		// is this the first property of its kind
-		isFirstProperty() {
-			if (this.index > 0) {
-				return this.sortedProperties[this.index - 1].name.split('.').pop() !== this.propName
-			}
-			return true
-		},
-		// is this the last property of its kind
-		isLastProperty() {
-			// array starts at 0, length starts at 1
-			if (this.index < this.sortedProperties.length - 1) {
-				return this.sortedProperties[this.index + 1].name.split('.').pop() !== this.propName
-			}
-			return true
-		},
 		isReadOnly() {
 			if (this.contact.addressbook) {
 				return this.contact.addressbook.readOnly

@@ -24,7 +24,6 @@ $property-label-max-width: 2 * $property-label-min-width;
 $property-value-max-width: 250px;
 
 .property {
-	@include generate-grid-span(1);
 	position: relative;
 	padding-right: 44px; // actions menu / button
 	// we need this to keep the alignment of the ext and delete/action button
@@ -34,6 +33,12 @@ $property-value-max-width: 250px;
 	justify-self: center;
 	width: 100%;
 
+	&__group {
+		margin-bottom: $grid-height-unit;
+		display: inline-block;
+		width: 100%;
+	}
+
 	&--last {
 		margin-bottom: $grid-height-unit;
 	}
@@ -42,11 +47,17 @@ $property-value-max-width: 250px;
 		display: none !important;
 	}
 
+
+	&__title {
+		padding-right: 44px;
+	}
+
 	// property row
 	&__row {
 		display: flex;
 		align-items: center;
 		position: relative;
+		width: 100%;
 	}
 
 	// property label or multiselect within row

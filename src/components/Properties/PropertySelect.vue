@@ -21,11 +21,7 @@
   -->
 
 <template>
-	<div v-if="propModel" :class="`grid-span-${gridLength}`" class="property">
-		<!-- title if first element -->
-		<property-title v-if="isFirstProperty && propModel.icon" :icon="propModel.icon" :readable-name="propModel.readableName"
-			:info="propModel.info" />
-
+	<div v-if="propModel" class="property">
 		<div class="property__row">
 			<!-- if we do not support any type on our model but one is set anyway -->
 			<div v-if="selectType" class="property__label">
@@ -33,8 +29,7 @@
 			</div>
 
 			<!-- no options, empty space -->
-			<div v-else class="property__label">
-			</div>
+			<div v-else class="property__label" />
 
 			<!-- props actions -->
 			<action :actions="actions" class="property__actions" />
@@ -48,14 +43,9 @@
 
 <script>
 import PropertyMixin from 'Mixins/PropertyMixin'
-import PropertyTitle from './PropertyTitle'
 
 export default {
 	name: 'PropertySelect',
-
-	components: {
-		PropertyTitle
-	},
 
 	mixins: [PropertyMixin],
 
@@ -68,12 +58,6 @@ export default {
 	},
 
 	computed: {
-		gridLength() {
-			let hasTitle = this.isFirstProperty && this.propModel.icon ? 1 : 0
-			let isLast = this.isLastProperty ? 1 : 0
-			// length is one & add one space at the end
-			return hasTitle + 1 + isLast
-		},
 		// is there only one option available
 		isSingleOption() {
 			return this.propModel.options.length <= 1

@@ -21,11 +21,7 @@
   -->
 
 <template>
-	<div v-if="propModel" :class="`grid-span-${gridLength}`" class="property">
-		<!-- title if first element -->
-		<property-title v-if="isFirstProperty && propModel.icon" :icon="propModel.icon" :readable-name="propModel.readableName"
-			:info="propModel.info" />
-
+	<div v-if="propModel" class="property">
 		<div class="property__row">
 			<!-- type selector -->
 			<multiselect v-if="propModel.options" v-model="localType"
@@ -48,7 +44,8 @@
 			<!-- show the first input if not -->
 			<input v-if="!property.isStructuredValue" v-model.trim="localValue[0]" :readonly="isReadOnly"
 				class="property__value" type="text" @input="updateValue">
-
+			<!-- else show empty dummy element -->
+			<div v-else class="property__value" />
 			<!-- props actions -->
 			<action :actions="actions" class="property__actions" />
 		</div>
@@ -66,7 +63,7 @@
 
 		<!-- no order enforced: just iterate on all the values -->
 		<template v-else>
-			<div v-for="(value, index) in filteredValue" :key="index"
+			<div v-for="(val, index) in filteredValue" :key="index"
 				class="property__row">
 				<div class="property__label" />
 				<input v-model.trim="filteredValue[index]" :readonly="isReadOnly" class="property__value"
@@ -78,14 +75,9 @@
 
 <script>
 import PropertyMixin from 'Mixins/PropertyMixin'
-import PropertyTitle from './PropertyTitle'
 
 export default {
 	name: 'PropertyText',
-
-	components: {
-		PropertyTitle
-	},
 
 	mixins: [PropertyMixin],
 
@@ -98,14 +90,6 @@ export default {
 	},
 
 	computed: {
-		gridLength() {
-			let hasTitle = this.isFirstProperty && this.propModel.icon ? 1 : 0
-			let isLast = this.isLastProperty
-			let hasValueNames = this.propModel.readableValues ? 1 : 0
-			let length = this.propModel.displayOrder ? this.propModel.displayOrder.length : this.value.length
-			return hasValueNames + hasTitle + length + isLast
-		},
-
 		filteredValue() {
 			return this.localValue.filter((value, index) => index > 0)
 		}

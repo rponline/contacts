@@ -21,15 +21,9 @@
   -->
 
 <template>
-	<div v-if="propModel" class="grid-span-2 property">
-
-		<!-- title if first element -->
-		<property-title :icon="propModel.icon" :readable-name="propModel.readableName"
-			:info="propModel.info" />
-
+	<div v-if="propModel" class="property">
 		<div class="property__row">
-			<div class="property__label">
-			</div>
+			<div class="property__label" />
 
 			<!-- multiselect taggable groups with a limit to 3 groups shown -->
 			<multiselect v-model="localValue" :options="groups" :placeholder="t('contacts', 'Add contact in group')"
@@ -53,14 +47,9 @@
 <script>
 import debounce from 'debounce'
 import Contact from 'Models/contact'
-import PropertyTitle from './PropertyTitle'
 
 export default {
 	name: 'PropertyGroups',
-
-	components: {
-		PropertyTitle
-	},
 
 	props: {
 

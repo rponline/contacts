@@ -21,11 +21,7 @@
   -->
 
 <template>
-	<div v-if="propModel" :class="`grid-span-${gridLength}`" class="property">
-		<!-- title if first element -->
-		<property-title v-if="isFirstProperty && propModel.icon" :icon="propModel.icon" :readable-name="propModel.readableName"
-			:info="propModel.info" />
-
+	<div v-if="propModel" class="property">
 		<div class="property__row">
 			<!-- type selector -->
 			<multiselect v-if="propModel.options" v-model="localType"
@@ -40,8 +36,7 @@
 			</div>
 
 			<!-- no options, empty space -->
-			<div v-else class="property__label">
-			</div>
+			<div v-else class="property__label" />
 
 			<!-- textarea for note -->
 			<textarea v-if="propName === 'note'" id="textarea" ref="textarea"
@@ -67,14 +62,9 @@
 <script>
 import debounce from 'debounce'
 import PropertyMixin from 'Mixins/PropertyMixin'
-import PropertyTitle from './PropertyTitle'
 
 export default {
 	name: 'PropertyText',
-
-	components: {
-		PropertyTitle
-	},
 
 	mixins: [PropertyMixin],
 
@@ -100,15 +90,6 @@ export default {
 	},
 
 	computed: {
-		gridLength() {
-			let hasTitle = this.isFirstProperty && this.propModel.icon ? 1 : 0
-			let isLast = this.isLastProperty ? 1 : 0
-			let noteHeight = this.propName === 'note'
-				? this.noteHeight
-				: 0
-			// length is one & add one space at the end
-			return hasTitle + 1 + isLast + noteHeight
-		},
 		type() {
 			if (this.propName === 'tel') {
 				return 'tel'

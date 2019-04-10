@@ -104,11 +104,9 @@
 
 	// contact details
 	section.contact-details {
-		display: grid;
-		/* unquote is a strange hack to avoid removal of the comma by the scss compiler */
-		grid-template-columns: repeat(auto-fit, minmax(unquote('#{$grid-column-width}'), 1fr));
-		grid-column-gap: $grid-column-gap;
-		padding: 20px $grid-column-gap;
+		column-width: 350px;
+		column-gap: 20px;
+		padding: 20px 40px 50px;
 		min-height: 200px;
 	}
 
