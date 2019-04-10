@@ -22,11 +22,13 @@
 
 <template>
 	<div v-if="propModel" class="grid-span-2 property">
-		<!-- NO title if first element for groups -->
+
+		<!-- title if first element -->
+		<property-title :icon="propModel.icon" :readable-name="propModel.readableName"
+			:info="propModel.info" />
 
 		<div class="property__row">
 			<div class="property__label">
-				{{ propModel.readableName }}
 			</div>
 
 			<!-- multiselect taggable groups with a limit to 3 groups shown -->
@@ -51,11 +53,17 @@
 <script>
 import debounce from 'debounce'
 import Contact from 'Models/contact'
+import PropertyTitle from './PropertyTitle'
 
 export default {
 	name: 'PropertyGroups',
 
+	components: {
+		PropertyTitle
+	},
+
 	props: {
+
 		propModel: {
 			type: Object,
 			default: () => {},

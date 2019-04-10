@@ -323,7 +323,7 @@ export default {
 		groupsModel() {
 			return {
 				readableName: t('contacts', 'Groups'),
-				icon: 'icon-contacts'
+				icon: 'icon-group'
 			}
 		},
 

@@ -41,7 +41,6 @@
 
 			<!-- no options, empty space -->
 			<div v-else class="property__label">
-				{{ propModel.readableName }}
 			</div>
 
 			<!-- textarea for note -->
