@@ -112,40 +112,11 @@
 					empty property because this is a required prop on regular property-select. But since
 					we are hijacking this... (this is supposed to be used with a ICAL.property, but to avoid code
 					duplication, we created a fake propModel and property with our own options here) -->
-				<div class="property__group">
-					<!-- title of property group-->
-					<property-title
-						:icon="addressbookModel.icon"
-						:readable-name="addressbookModel.readableName"
-						:info="addressbookModel.info" />
-					<property-select
-						:prop-model="addressbookModel"
-						:value.sync="addressbook"
-						:property="{}"
-						class="property--addressbooks" />
-				</div>
-				<div class="property__group">
-					<property-title
-						:icon="groupsModel.icon"
-						:readable-name="groupsModel.readableName"
-						:info="groupsModel.info" />
 
-					<!-- Groups always visible -->
-					<property-groups
-						:prop-model="groupsModel"
-						:value.sync="groups"
-						:contact="contact"
-						:is-read-only="isReadOnly"
-						class="property--groups" />
-				</div>
+				<contact-details-property-group :contact="contact" :special="'adressbook'" />
+				<contact-details-property-group :contact="contact" :special="'groups'" :is-read-only="isReadOnly" />
+				<contact-details-property-group :contact="contact" :special="'add'" :is-read-only="isReadOnly" />
 
-				<!-- new property select -->
-				<div class="property__group">
-					<property-title
-						:icon="'icon-add'"
-						:readable-name="t('contacts', 'Add new property')" />
-					<add-new-prop v-if="!isReadOnly" :contact="contact" />
-				</div>
 				<!-- Last modified-->
 				<property-rev v-if="contact.rev" :value="contact.rev" />
 			</section>
@@ -163,10 +134,6 @@ import rfcProps from 'Models/rfcProps'
 import validate from 'Services/validate'
 
 import ContactDetailsPropertyGroup from './ContactDetails/ContactDetailsPropertyGroup'
-import AddNewProp from './ContactDetails/ContactDetailsAddNewProp'
-import PropertyTitle from 'Components/Properties/PropertyTitle'
-import PropertySelect from './Properties/PropertySelect'
-import PropertyGroups from './Properties/PropertyGroups'
 import PropertyRev from './Properties/PropertyRev'
 import ContactAvatar from './ContactDetails/ContactDetailsAvatar'
 
@@ -177,11 +144,7 @@ export default {
 
 	components: {
 		ContactDetailsPropertyGroup,
-		PropertyTitle,
-		PropertySelect,
-		PropertyGroups,
 		PropertyRev,
-		AddNewProp,
 		ContactAvatar
 	},
 
@@ -351,78 +314,6 @@ export default {
 			})
 		},
 
-		/**
-		 * Fake model to use the propertySelect component
-		 *
-		 * @returns {Object}
-		 */
-		addressbookModel() {
-			return {
-				readableName: t('contacts', 'Addressbook'),
-				icon: 'icon-address-book',
-				options: this.addressbooksOptions
-			}
-		},
-
-		/**
-		 * Usable addressbook object linked to the local contact
-		 *
-		 * @param {string} [addressbookId] set the addressbook id
-		 * @returns {string}
-		 */
-		addressbook: {
-			get: function() {
-				return this.contact.addressbook.id
-			},
-			set: function(addressbookId) {
-				this.moveContactToAddressbook(addressbookId)
-			}
-		},
-
-		/**
-		 * Fake model to use the propertyGroups component
-		 *
-		 * @returns {Object}
-		 */
-		groupsModel() {
-			return {
-				readableName: t('contacts', 'Groups'),
-				icon: 'icon-group'
-			}
-		},
-
-		/**
-		 * Usable groups object linked to the local contact
-		 *
-		 * @param {string[]} data An array of groups
-		 * @returns {Array}
-		 */
-		groups: {
-			get: function() {
-				return this.contact.groups
-			},
-			set: function(data) {
-				this.contact.groups = data
-				this.debounceUpdateContact()
-			}
-		},
-
-		/**
-		 * Store getters filtered and mapped to usable object
-		 *
-		 * @returns {Array}
-		 */
-		addressbooksOptions() {
-			return this.addressbooks
-				.filter(addressbook => !addressbook.readOnly && addressbook.enabled)
-				.map(addressbook => {
-					return {
-						id: addressbook.id,
-						name: addressbook.displayName
-					}
-				})
-		},
-
 		// store getter
 		addressbooks() {
 			return this.$store.getters.getAddressbooks
@@ -561,37 +452,6 @@ export default {
 			this.$store.dispatch('deleteContact', { contact: this.contact })
 		},
 
-		/**
-		 * Move contact to the specified addressbook
-		 *
-		 * @param {string} addressbookId the desired addressbook ID
-		 */
-		async moveContactToAddressbook(addressbookId) {
-			let addressbook = this.addressbooks.find(search => search.id === addressbookId)
-			this.loadingUpdate = true
-			if (addressbook) {
-				try {
-					const contact = await this.$store.dispatch('moveContactToAddressbook', {
-						// we need to use the store contact, not the local contact
-						// using this.contact and not this.localContact
-						contact: this.contact,
-						addressbook
-					})
-					// select the contact again
-					this.$router.push({
-						name: 'contact',
-						params: {
-							selectedGroup: this.$route.params.selectedGroup,
-							selectedContact: contact.key
-						}
-					})
-				} catch (error) {
-					console.error(error)
-				} finally {
-					this.loadingUpdate = false
-				}
-			}
-		},
 		selectSortedPropertiesByName(propertyName) {
 			return this.sortedProperties.filter((property) => {
 				return property.name === propertyName

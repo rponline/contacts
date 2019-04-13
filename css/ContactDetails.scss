@@ -104,10 +104,13 @@
 
 	// contact details
 	section.contact-details {
-		column-width: 350px;
-		column-gap: 20px;
 		padding: 20px 40px 50px;
 		min-height: 200px;
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(350px,1fr));
+		grid-column-gap: 20px;
+		grid-row-gap: $grid-height-unit;
+		grid-auto-rows: 0;
 	}
 
 	// single column fix, better visual
