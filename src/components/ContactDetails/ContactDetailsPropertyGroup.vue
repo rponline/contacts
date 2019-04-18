@@ -37,7 +37,7 @@
 				:key="`${index}-${contact.key}-${property.name}`" :index="index"
 				:sorted-properties="sortedProperties"
 				:property="property"
-				:contact="contact"
+				:contact="contact" :local-contact="localContact"
 				:update-contact="debounceUpdateContact"
 				@updatedcontact="debounceUpdateContact" />
 		</div>
@@ -106,6 +106,9 @@ export default {
 		contact: {
 			type: Contact,
 			default: null
+		},
+		localContact: {
+			type: Object
 		},
 		sortedPropertyGroup: {
 			type: Object,

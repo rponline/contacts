@@ -90,8 +90,7 @@
 				<!-- qrcode -->
 				<modal v-if="qrcode" id="qrcode-modal" :title="contact.displayName"
 					@close="closeQrModal">
-					<img :src="`data:image/svg+xml;base64,${qrcode}`" class="qrcode" width="300"
-						height="300">
+					<img :src="`data:image/svg+xml;base64,${qrcode}`" class="qrcode" width="400">
 				</modal>
 			</header>
 
@@ -105,7 +104,7 @@
 					:key="`sorted-property-group-${index}`"
 					:index="index"
 					:sorted-property-group="group"
-					:contact="contact"
+					:contact="contact" :local-contact="localContact"
 					:debounce-update-contact="debounceUpdateContact" />
 
 				<!-- addressbook change select - no last property because class is not applied here,
@@ -340,7 +339,6 @@ export default {
 
 	methods: {
 		/**
-		 * Executed on the 'updatedcontact' event
 		 * Send the local clone of contact to the store
 		 */
 		async updateContact() {
@@ -406,17 +404,8 @@ export default {
 				if (contact.dav) {
 					try {
 						await this.$store.dispatch('fetchFullContact', { contact })
-
-						// create empty contact and copy inner data
-						let localContact = Object.assign(
-							Object.create(Object.getPrototypeOf(contact)),
-							contact
-						)
-
-						this.fixed = validate(localContact)
-
-						this.localContact = localContact
-						this.loadingData = false
+						// clone to a local editable variable
+						this.updateLocalContact(contact)
 					} catch (error) {
 						if (error.name === 'ParserError') {
 							OC.Notification.showTemporary(t('contacts', 'Syntax error. Cannot open the contact.'))
@@ -430,17 +419,8 @@ export default {
 						this.$store.dispatch('deleteContact', { contact: this.contact, dav: false })
 					}
 				} else {
-					// create empty contact and copy inner data
-					// wait for an update to really push the contact on the server!
-					let localContact = Object.assign(
-						Object.create(Object.getPrototypeOf(contact)),
-						contact
-					)
-
-					this.fixed = validate(localContact)
-
-					this.localContact = localContact
-					this.loadingData = false
+					// clone to a local editable variable
+					this.updateLocalContact(contact)
 				}
 			}
 		},
@@ -470,6 +450,24 @@ export default {
 		// reset the current qrcode
 		closeQrModal() {
 			this.qrcode = ''
+		},
+
+		/**
+		 *  Update this.localContact and set this.fixed
+		 *
+		 * @param {Contact} contact the contact to clone
+		 */
+		updateLocalContact(contact) {
+			// create empty contact and copy inner data
+			let localContact = Object.assign(
+				Object.create(Object.getPrototypeOf(contact)),
+				contact
+			)
+
+			this.fixed = validate(localContact)
+
+			this.localContact = localContact
+			this.loadingData = false
 		}
 	}
 }
