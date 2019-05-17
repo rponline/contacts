@@ -30,8 +30,8 @@
 				:multiple="true" :taggable="true" :close-on-select="false"
 				:readonly="isReadOnly" :tag-width="60"
 				tag-placeholder="create" class="property__value"
-				@input="updateValue" @tag="validateGroup" @select="addContactToGroup"
-				@remove="removeContactToGroup">
+				@input="updateValue" @tag="validateGroup"
+				@select="addContactToGroup" @remove="removeContactToGroup">
 				<!-- show how many groups are hidden and add tooltip -->
 				<span slot="limit" v-tooltip.auto="formatGroupsTitle" class="multiselect__limit">
 					+{{ localValue.length - 3 }}
@@ -72,6 +72,10 @@ export default {
 		isReadOnly: {
 			type: Boolean,
 			default: false
+		},
+		updateContact: {
+			type: Function,
+			default: () => {}
 		}
 	},
 
@@ -131,7 +135,6 @@ export default {
 				contact: this.contact,
 				groupName
 			})
-			this.updateValue()
 		},
 
 		/**

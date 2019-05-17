@@ -99,22 +99,26 @@
 
 			<!-- contact details -->
 			<section v-else class="contact-details">
-				<!-- group by property name -->
+				<!-- view/change/delete properties; grouped by property name -->
 				<contact-details-property-group v-for="(group, index) in sortedPropertiesByName"
 					:key="`sorted-property-group-${index}`"
 					:index="index"
 					:sorted-property-group="group"
 					:contact="contact" :local-contact="localContact"
-					:debounce-update-contact="debounceUpdateContact" />
-
-				<!-- addressbook change select - no last property because class is not applied here,
-					empty property because this is a required prop on regular property-select. But since
-					we are hijacking this... (this is supposed to be used with a ICAL.property, but to avoid code
-					duplication, we created a fake propModel and property with our own options here) -->
-
-				<contact-details-property-group :contact="contact" :special="'adressbook'" />
-				<contact-details-property-group :contact="contact" :special="'groups'" :is-read-only="isReadOnly" />
-				<contact-details-property-group :contact="contact" :special="'add'" :is-read-only="isReadOnly" />
+					:debounce-update-contact="debounceUpdateContact"
+					:update-contact="updateContact" />
+				<!-- view/change addressbook -->
+				<contact-details-property-group
+					:contact="contact" :special="'addressbook'"
+					:update-contact="updateContact" />
+				<!-- view/change contact groups -->
+				<contact-details-property-group
+					:contact="contact" :special="'groups'"
+					:is-read-only="isReadOnly" :update-contact="updateContact" />
+				<!-- add new property -->
+				<contact-details-property-group
+					:contact="contact" :special="'add'"
+					:is-read-only="isReadOnly" :update-contact="updateContact" />
 
 				<!-- Last modified-->
 				<property-rev v-if="contact.rev" :value="contact.rev" />
@@ -463,7 +467,6 @@ export default {
 				Object.create(Object.getPrototypeOf(contact)),
 				contact
 			)
-
 			this.fixed = validate(localContact)
 
 			this.localContact = localContact

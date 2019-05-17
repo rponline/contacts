@@ -38,14 +38,14 @@
 				:sorted-properties="sortedProperties"
 				:property="property"
 				:contact="contact" :local-contact="localContact"
-				:update-contact="debounceUpdateContact"
+				:update-contact="updateContact"
 				@updatedcontact="debounceUpdateContact" />
 		</div>
 	</div>
 	<div v-else-if="special" class="property__group"
 		:style="height">
 		<div ref="grp" class="property__group_inner">
-			<template v-if="special === 'adressbook'">
+			<template v-if="special === 'addressbook'">
 				<property-title
 					:icon="specialModel.addressbook.icon"
 					:readable-name="specialModel.addressbook.readableName"
@@ -108,7 +108,8 @@ export default {
 			default: null
 		},
 		localContact: {
-			type: Object
+			type: Object,
+			default: null
 		},
 		sortedPropertyGroup: {
 			type: Object,
@@ -167,7 +168,6 @@ export default {
 			},
 			set: function(data) {
 				this.contact.groups = data
-				this.debounceUpdateContact()
 			}
 		},
 
@@ -249,7 +249,6 @@ export default {
 				let gridRowGap = 40 // ugly: hardcoded grid-row-gap
 				let rowHeight = 0 // ugly: hardcoded grid-auto-rows
 				let rowSpan = Math.ceil((brickHeight + gridRowGap) / (rowHeight + gridRowGap))
-				console.info(rowSpan)
 				this.$set(this.height, 'gridRowEnd', 'span ' + rowSpan)
 			}
 		},

@@ -75,7 +75,7 @@ export default {
 			required: true
 		},
 		value: {
-			type: String,
+			type: [String, Array],
 			default: '',
 			required: true
 		}
